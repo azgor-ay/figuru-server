@@ -25,7 +25,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    
+    const toysCollection = client.db("FiguruDatabase").collection("ActionFigures"); 
+    app.get('/actionFigures', async(req, res) => {
+      let query = {}
+      if(req.query.subCategory){
+        query = {subCategory: req.query.subCategory}
+      }
+      const result = await toysCollection.find(query).toArray()
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
