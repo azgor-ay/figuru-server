@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 const app = express();
@@ -26,13 +26,37 @@ async function run() {
     await client.connect();
 
     const toysCollection = client.db("FiguruDatabase").collection("ActionFigures"); 
+    const categoryCollection = client.db("categoryDB").collection("subCategories"); 
+
     app.get('/actionFigures', async(req, res) => {
       let query = {}
       if(req.query.subCategory){
         query = {subCategory: req.query.subCategory}
+      }else if(req.query.id){
+        query = {_id: new ObjectId(req.query.id)}
+      } else if(req.query.email){
+        query = {email: req.query.email}
       }
       const result = await toysCollection.find(query).toArray()
       res.send(result)
+    })
+
+    app.get('/categories', async(req, res) => {
+      const result = await categoryCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.post('/actionFigures', async(req, res) => {
+      const toy = req.body; 
+      const result = await toysCollection.insertOne(toy);
+      res.send(result)
+    })
+
+    app.delete('/actionFigures/:id', async(req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await toysCollection.deleteOne(query)
+      res.send(result); 
     })
 
     // Send a ping to confirm a successful connection
