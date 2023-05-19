@@ -25,39 +25,48 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const toysCollection = client.db("FiguruDatabase").collection("ActionFigures"); 
-    const categoryCollection = client.db("categoryDB").collection("subCategories"); 
+    const toysCollection = client
+      .db("FiguruDatabase")
+      .collection("ActionFigures");
+    const categoryCollection = client
+      .db("categoryDB")
+      .collection("subCategories");
 
-    app.get('/actionFigures', async(req, res) => {
-      let query = {}
-      if(req.query.subCategory){
-        query = {subCategory: req.query.subCategory}
-      }else if(req.query.id){
-        query = {_id: new ObjectId(req.query.id)}
-      } else if(req.query.email){
-        query = {email: req.query.email}
+    app.get("/actionFigures", async (req, res) => {
+      let query = {};
+      if (req.query.subCategory) {
+        query = { subCategory: req.query.subCategory };
+      } else if (req.query.id) {
+        query = { _id: new ObjectId(req.query.id) };
+      } else if (req.query.email) {
+        query = { email: req.query.email };
       }
-      const result = await toysCollection.find(query).toArray()
-      res.send(result)
-    })
+      const result = await toysCollection.find(query).toArray();
+      res.send(result);
+    });
 
-    app.get('/categories', async(req, res) => {
-      const result = await categoryCollection.find().toArray()
-      res.send(result)
-    })
+    app.get("/categories", async (req, res) => {
+      const result = await categoryCollection.find().toArray();
+      res.send(result);
+    });
 
-    app.post('/actionFigures', async(req, res) => {
-      const toy = req.body; 
+    app.post("/actionFigures", async (req, res) => {
+      const toy = req.body;
       const result = await toysCollection.insertOne(toy);
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-    app.delete('/actionFigures/:id', async(req, res) => {
-      const id = req.params.id
-      const query = {_id: new ObjectId(id)}
-      const result = await toysCollection.deleteOne(query)
-      res.send(result); 
-    })
+    app.delete("/actionFigures/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toysCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.delete("/actionFigures", async (req, res) => {
+      const query = { email: { $eq: req.query.email } };
+      const result = await toysCollection.deleteMany(query)
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
