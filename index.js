@@ -74,6 +74,25 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/actionFigures/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const { image, name, price, rating, reviews, stock } = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          image,
+          name,
+          price,
+          rating,
+          reviews,
+          stock,
+        },
+      };
+      const result = await toysCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     app.delete("/actionFigures/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
