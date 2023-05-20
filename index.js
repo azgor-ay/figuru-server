@@ -45,6 +45,24 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/allToys", async (req, res) => {
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const skip = page * limit;
+      const result = await toysCollection
+        .find()
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+
+      res.send(result);
+    });
+
+    app.get("/totalActionFigures", async (req, res) => {
+      const result = await toysCollection.estimatedDocumentCount();
+      res.send({ totalToys: result });
+    });
+
     app.get("/categories", async (req, res) => {
       const result = await categoryCollection.find().toArray();
       res.send(result);
@@ -64,7 +82,7 @@ async function run() {
     });
     app.delete("/actionFigures", async (req, res) => {
       const query = { email: { $eq: req.query.email } };
-      const result = await toysCollection.deleteMany(query)
+      const result = await toysCollection.deleteMany(query);
       res.send(result);
     });
 
