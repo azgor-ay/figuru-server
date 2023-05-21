@@ -25,12 +25,9 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const toysCollection = client
-      .db("FiguruDatabase")
-      .collection("ActionFigures");
-    const categoryCollection = client
-      .db("categoryDB")
-      .collection("subCategories");
+    const toysCollection = client.db("FiguruDatabase").collection("ActionFigures");
+    const categoryCollection = client.db("categoryDB").collection("subCategories");
+    const galleryPhotosCollection = client.db("photoGallery").collection("photos");
 
     app.get("/actionFigures", async (req, res) => {
       let query = {};
@@ -68,6 +65,10 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/galleryPhotos', async (req, res) =>{
+      const result = await galleryPhotosCollection.find().toArray();
+      res.send(result)
+    })
     app.post("/actionFigures", async (req, res) => {
       const toy = req.body;
       const result = await toysCollection.insertOne(toy);
